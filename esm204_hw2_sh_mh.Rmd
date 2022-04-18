@@ -2,11 +2,14 @@
 title: "beepboop"
 author: "Sarah Hamilton and Maggie Hammond"
 date: "4/17/2022"
-output: html_document
+output:   
+  html_document:
+    theme: flatly
+    code_folding: hide
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r setup, include=FALSE, message = FALSE, warning = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 library(tidyverse)
 library(here)
 library(janitor)
@@ -20,7 +23,7 @@ water_markets <- read_csv(here("data", "Water_Districts.csv")) %>%
   clean_names()
 ```
 
-### Task 1. Plot Marginal Abatement Cost Data
+### Plot Marginal Cost Data
 
 ```{r}
 # linear regression will be the estimate of the marginal abatement cost curve
@@ -29,14 +32,38 @@ districts <- water_markets %>%
   select(-x1) %>% 
   pivot_longer(cols = c(mc_kern, mc_mojave, mc_antelope, mc_ventura),
                names_to = 'county',
-               values_to = 'mc')
+               values_to = 'mc') %>% 
+  mutate(county = case_when(
+    county == 'mc_kern' ~ 'Kern',
+    county == 'mc_ventura' ~ 'Ventura',
+    county == 'mc_antelope' ~ 'Antelope',
+    county == 'mc_mojave' ~ 'Mojave'
+  ))
 
 ggplot(data = districts, aes(y = mc, x = reduction)) +
   geom_point(aes(color = county)) +
   scale_color_manual(values = c('orange', 'red', 'yellow', 'purple')) +
-  labs(x = "Reduction in Water (UNIT)",
-       y = "Marginal Cost (UNIT)",
-       color = "County") +
+  labs(x = "Reduction in Water (AF)",
+       y = "Marginal Cost ($/AF)",
+       color = "County",
+       title = "Marginal Cost of Water \n Reduction in Central California") +
   theme_minimal()
+```
+
+
+### Create Marginal Abatement Cost Linear Regression Model 
+
+```{r}
+#penguin_lm <- lm(body_mass_g ~ flipper_length_mm, data = penguins)
+
+mojave_lm <- lm(mc_mojave ~ reduction, data = water_markets) 
+
+ventura_lm <- lm(mc_ventura ~ reduction, data = water_markets) 
+
+antelope_lm <- lm(mc_antelope ~ reduction, data = water_markets)
+
+kern_lm <- lm(mc_kern ~ reduction, data = water_markets)
+
+
 ```
 
