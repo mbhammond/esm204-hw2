@@ -42,12 +42,13 @@ districts <- water_markets %>%
 
 ggplot(data = districts, aes(y = mc, x = reduction)) +
   geom_point(aes(color = county)) +
-  scale_color_manual(values = c('orange', 'red', 'yellow', 'purple')) +
+  scale_color_manual(values = c('orange', 'red', 'green', 'purple')) +
   labs(x = "Reduction in Water (AF)",
        y = "Marginal Cost ($/AF)",
        color = "County",
        title = "Marginal Cost of Water \n Reduction in Central California") +
   theme_minimal()
+  # geom_smooth(method = "lm")
 ```
 
 
@@ -64,6 +65,43 @@ antelope_lm <- lm(mc_antelope ~ reduction, data = water_markets)
 
 kern_lm <- lm(mc_kern ~ reduction, data = water_markets)
 
+# extract the equations for marginal cost of abatement 
+
+extract_eq(model = mojave_lm, use_coefs = TRUE)
+extract_eq(model = ventura_lm, use_coefs = TRUE)
+extract_eq(model = antelope_lm, use_coefs = TRUE)
+extract_eq(model = kern_lm, use_coefs = TRUE)
+
 
 ```
+
+### Derive District's Demand Curves for Water
+
+Abatement = Eo - E
+
+```{r}
+mojave_mb <- function(x){534.11-3.83*x}
+ventura_mb <- function(x){437.65-1.79*x}
+antelope_mb <- function(x){629.14-2.86*x}
+kern_mb <- function(x){341.24-2.25*x}
+
+
+ggplot(data.frame(x = c(0,250)), aes(x = x)) +
+  stat_function(fun = mojave_mb, color = "green") +
+  stat_function(fun = ventura_mb, color = "purple") +
+  stat_function(fun = antelope_mb, color = "orange") +
+  stat_function(fun = kern_mb, color = "red") +
+  theme_minimal() +
+  ylim(0, 750) +
+  labs(x = "Amount of Water Used (AF)", y = "Price of Water ($/AF)",
+       title = "Demand for Water") 
+  
+  # scale_color_manual(name = 'District',
+  #                    breaks = c('Mojave','Ventura','Antelope','Kern'),
+  #                    values = c('Mojave' = "#008080", 'Ventura' = "#ff7373", 'Antelope' = "#528360", 'Kern' ="#7d84ad"))
+  
+  # legend(175, 600, legend = c("Mojave", "Ventura", "Antelope", "Kern"), col = c("#008080", "#ff7373", "#528360", "#7d84ad"), lty = 1:2, cex = 0.8)
+```
+
+Based on the districts' demand curves, Antelope is willing to pay the most for the first acre foot of water because their marginal benefit for their first unit of water is the highest (around 600).
 
