@@ -57,13 +57,13 @@ ggplot(data = districts, aes(y = mc, x = reduction)) +
 ```{r}
 #penguin_lm <- lm(body_mass_g ~ flipper_length_mm, data = penguins)
 
-mojave_lm <- lm(mc_mojave ~ reduction, data = water_markets) 
+mojave_lm <- lm(mc_mojave ~ 0 + reduction, data = water_markets) 
 
-ventura_lm <- lm(mc_ventura ~ reduction, data = water_markets) 
+ventura_lm <- lm(mc_ventura ~ 0 + reduction, data = water_markets) 
 
-antelope_lm <- lm(mc_antelope ~ reduction, data = water_markets)
+antelope_lm <- lm(mc_antelope ~ 0 + reduction, data = water_markets)
 
-kern_lm <- lm(mc_kern ~ reduction, data = water_markets)
+kern_lm <- lm(mc_kern ~ 0 + reduction, data = water_markets)
 
 # extract the equations for marginal cost of abatement 
 
@@ -82,10 +82,10 @@ extract_eq(model = kern_lm, use_coefs = TRUE)
 Abatement = Eo - E
 
 ```{r}
-mojave_mb <- function(x){534.11-3.83*x}
-ventura_mb <- function(x){437.65-1.79*x}
-antelope_mb <- function(x){629.14-2.86*x}
-kern_mb <- function(x){341.24-2.25*x}
+mojave_mb <- function(x){532.56-3.804*x}
+ventura_mb <- function(x){435.12-1.776*x}
+antelope_mb <- function(x){628.76-2.858*x}
+kern_mb <- function(x){342.9-2.286*x}
 
 ### OUTPUT THESE EQUATIONS SOMEHOW****
 
