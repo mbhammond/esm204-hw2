@@ -23,7 +23,7 @@ water_markets <- read_csv(here("data", "Water_Districts.csv")) %>%
   clean_names()
 ```
 
-### Plot Marginal Cost Data
+# Plot Marginal Cost Data
 
 ```{r}
 # linear regression will be the estimate of the marginal abatement cost curve
@@ -52,7 +52,7 @@ ggplot(data = districts, aes(y = mc, x = reduction)) +
 ```
 
 
-### Create Marginal Abatement Cost Linear Regression Model 
+# Create Marginal Abatement Cost Linear Regression Model 
 
 ```{r}
 #penguin_lm <- lm(body_mass_g ~ flipper_length_mm, data = penguins)
@@ -72,10 +72,12 @@ extract_eq(model = ventura_lm, use_coefs = TRUE)
 extract_eq(model = antelope_lm, use_coefs = TRUE)
 extract_eq(model = kern_lm, use_coefs = TRUE)
 
+# total_function <- function(x){-0.593+1.61*x}
+
 
 ```
 
-### Derive District's Demand Curves for Water
+# Derive District's Demand Curves for Water
 
 Abatement = Eo - E
 
@@ -84,6 +86,8 @@ mojave_mb <- function(x){534.11-3.83*x}
 ventura_mb <- function(x){437.65-1.79*x}
 antelope_mb <- function(x){629.14-2.86*x}
 kern_mb <- function(x){341.24-2.25*x}
+
+### OUTPUT THESE EQUATIONS SOMEHOW****
 
 
 ggplot(data.frame(x = c(0,250)), aes(x = x)) +
@@ -104,4 +108,48 @@ ggplot(data.frame(x = c(0,250)), aes(x = x)) +
 ```
 
 Based on the districts' demand curves, Antelope is willing to pay the most for the first acre foot of water because their marginal benefit for their first unit of water is the highest (around 600).
+
+# Policy Analysis
+
+# Policy 1: Cap Without Trade
+
+
+# Policy 2: Tax on Water Use
+
+
+# Policy 3: Cap and Trade 
+
+```{r}
+water_markets_sum <- water_markets %>%
+  mutate(total_water = mc_kern+mc_mojave+mc_antelope+mc_ventura)
+
+total_lm <- lm(total_water ~ reduction, data = water_markets_sum)
+
+extract_eq(model = total_lm, use_coefs = TRUE)
+
+
+districts <- water_markets_sum %>% 
+  select(-x1) %>% 
+  pivot_longer(cols = c(mc_kern, mc_mojave, mc_antelope, mc_ventura, total_water),
+               names_to = 'county',
+               values_to = 'mc') %>% 
+  mutate(county = case_when(
+    county == 'mc_kern' ~ 'Kern',
+    county == 'mc_ventura' ~ 'Ventura',
+    county == 'mc_antelope' ~ 'Antelope',
+    county == 'mc_mojave' ~ 'Mojave',
+    county == 'total_water' ~ 'Total'
+  ))
+
+ggplot(data = districts, aes(y = mc, x = reduction)) +
+  geom_point(aes(color = county)) +
+  scale_color_manual(values = c('orange', 'red', 'green', 'purple', 'yellow')) +
+  labs(x = "Reduction in Water (AF)",
+       y = "Marginal Cost ($/AF)",
+       color = "County",
+       title = "Marginal Cost of Water \n Reduction in Central California") +
+  theme_minimal()
+  # geom_smooth(method = "lm")
+
+```
 
