@@ -46,7 +46,7 @@ ggplot(data = districts, aes(y = mc, x = reduction)) +
   labs(x = "Reduction in Water (AF)",
        y = "Marginal Cost ($/AF)",
        color = "County",
-       title = "Marginal Cost of Water \n Reduction in Central California") +
+       title = "Marginal Cost of Water Reduction in Central California") +
   theme_minimal()
   # geom_smooth(method = "lm")
 ```
